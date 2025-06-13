@@ -172,7 +172,6 @@ node = Node(
 # The FastAPI server in api.py will handle all incoming requests.
 # server = GRPCServer(node, args.node_host, args.node_port)
 # node.server = server
-api.node = node
 buffered_token_output = {}
 def update_topology_viz(req_id, tokens, __):
   if not topology_viz: return
@@ -412,7 +411,7 @@ async def main():
   else:
     # If we are running as a Roxonn node, we start the API server and wait.
     # The --node-port argument will be used by the API server.
-    asyncio.create_task(api.run(port=args.node_port))
+    asyncio.create_task(api.run(node, port=args.node_port))
     await asyncio.Event().wait()
 
   if args.wait_for_peers > 0:

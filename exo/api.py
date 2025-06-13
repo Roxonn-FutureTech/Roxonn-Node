@@ -51,7 +51,9 @@ async def execute_task(request: Request):
         print(f"Error during compute task: {e}")
         return {"status": "error", "message": str(e)}
 
-async def run(host="0.0.0.0", port=52415):
+async def run(node_instance: Node, host="0.0.0.0", port=52415):
+    global node
+    node = node_instance
     config = uvicorn.Config(app, host=host, port=port, log_level="info")
     server = uvicorn.Server(config)
     await server.serve()
