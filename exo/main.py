@@ -325,6 +325,22 @@ async def check_exo_home():
           """)
 
 async def send_heartbeat(node_id, wallet_address, host, port):
+    # First, check if the node is registered on-chain
+    try:
+        check_url = f"https://api.roxonn.com/api/node/check-registration?nodeId={node_id}"
+        response = requests.get(check_url)
+        if not response.json().get("isRegistered"):
+            print("Node not registered on-chain. Attempting to register...")
+            register_url = "https://api.roxonn.com/api/node/register"
+            register_payload = {"nodeId": node_id, "walletAddress": wallet_address}
+            register_response = requests.post(register_url, json=register_payload)
+            if register_response.status_code == 200:
+                print("Node successfully registered on-chain.")
+            else:
+                print(f"Failed to register node on-chain: {register_response.text}")
+    except Exception as e:
+        print(f"Error during node registration check: {e}")
+
     while True:
         try:
             payload = {
