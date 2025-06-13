@@ -411,7 +411,10 @@ async def main():
       await train_model_cli(node, model_name, dataloader, args.batch_size, args.iters, save_interval=args.save_every, checkpoint_dir=args.save_checkpoint_dir)
 
   else:
-    asyncio.create_task(api.run(port=args.chatgpt_api_port))  # Start the API server as a non-blocking task
+    # If we are running as a Roxonn node, we don't need the ChatGPT API.
+    # We just need to run the gRPC server and wait indefinitely.
+    if not args.roxonn_wallet_address:
+      asyncio.create_task(api.run(port=args.chatgpt_api_port))
     await asyncio.Event().wait()
 
   if args.wait_for_peers > 0:
