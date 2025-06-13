@@ -168,8 +168,10 @@ node = Node(
   topology_viz=topology_viz,
   default_sample_temperature=args.default_temp
 )
-server = GRPCServer(node, args.node_host, args.node_port)
-node.server = server
+# The gRPC server is no longer needed for the V1 showcase.
+# The FastAPI server in api.py will handle all incoming requests.
+# server = GRPCServer(node, args.node_host, args.node_port)
+# node.server = server
 api = ChatGPTAPI(
   node,
   node.inference_engine.__class__.__name__,
@@ -378,13 +380,17 @@ async def main():
 
   # Use a more direct approach to handle signals
   def handle_exit():
-    asyncio.ensure_future(shutdown(signal.SIGTERM, loop, node.server))
+    # The gRPC server is no longer used, so we don't need to shut it down.
+    # asyncio.ensure_future(shutdown(signal.SIGTERM, loop, node.server))
+    pass
 
   if platform.system() != "Windows":
     for s in [signal.SIGINT, signal.SIGTERM]:
       loop.add_signal_handler(s, handle_exit)
 
-  await node.start(wait_for_peers=args.wait_for_peers)
+  # The node.start() method was tied to the gRPC server.
+  # We will now start the API server directly.
+  # await node.start(wait_for_peers=args.wait_for_peers)
 
   if args.roxonn_wallet_address:
       asyncio.create_task(send_heartbeat(args.node_id, args.roxonn_wallet_address, args.node_host, args.node_port))
@@ -411,10 +417,9 @@ async def main():
       await train_model_cli(node, model_name, dataloader, args.batch_size, args.iters, save_interval=args.save_every, checkpoint_dir=args.save_checkpoint_dir)
 
   else:
-    # If we are running as a Roxonn node, we don't need the ChatGPT API.
-    # We just need to run the gRPC server and wait indefinitely.
-    if not args.roxonn_wallet_address:
-      asyncio.create_task(api.run(port=args.chatgpt_api_port))
+    # If we are running as a Roxonn node, we start the API server and wait.
+    # The --node-port argument will be used by the API server.
+    asyncio.create_task(api.run(port=args.node_port))
     await asyncio.Event().wait()
 
   if args.wait_for_peers > 0:

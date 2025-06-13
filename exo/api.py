@@ -37,8 +37,6 @@ class ChatGPTAPI:
                 request_data = await request.json()
                 prompt = request_data["prompt"]
                 
-                # This is a simplified version of the logic in the main run_model_cli.
-                # A helper function in the Node class would be a cleaner implementation.
                 shard = self.node.inference_engine.shard
                 if not shard:
                     return {"status": "error", "message": "Node has no model loaded."}
@@ -46,7 +44,6 @@ class ChatGPTAPI:
                 tokenizer = self.node.inference_engine.tokenizer
                 request_id = str(uuid.uuid4())
                 
-                # We need a way to get the response back. We'll create a future for it.
                 future = asyncio.get_event_loop().create_future()
 
                 def on_token_callback(req_id, tokens, is_finished):
