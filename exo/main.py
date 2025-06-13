@@ -318,38 +318,6 @@ async def check_exo_home():
           {"❌ No write access" if not has_write else ""}
           """)
 
-async def send_heartbeat(node_id, wallet_address, host, port):
-    # First, check if the node is registered on-chain
-    try:
-        check_url = f"https://api.roxonn.com/api/node/check-registration?nodeId={node_id}"
-        response = requests.get(check_url)
-        if not response.json().get("isRegistered"):
-            print("Node not registered on-chain. Attempting to register...")
-            register_url = "https://api.roxonn.com/api/node/register"
-            register_payload = {"nodeId": node_id, "walletAddress": wallet_address}
-            register_response = requests.post(register_url, json=register_payload)
-            if register_response.status_code == 200:
-                print("Node successfully registered on-chain.")
-            else:
-                print(f"Failed to register node on-chain: {register_response.text}")
-    except Exception as e:
-        print(f"Error during node registration check: {e}")
-
-    while True:
-        try:
-            payload = {
-                "node_id": node_id,
-                "wallet_address": wallet_address,
-                "ip_address": host,
-                "port": port
-            }
-            roxonn_url = os.environ.get("ROXONN_HEARTBEAT_URL", "https://api.roxonn.com/api/node/heartbeat")
-            requests.post(roxonn_url, json=payload)
-            if DEBUG >= 1: print(f"Sent heartbeat for node {node_id}")
-        except Exception as e:
-            if DEBUG >= 1: print(f"Failed to send heartbeat: {e}")
-        await asyncio.sleep(60)
-
 async def main():
   loop = asyncio.get_running_loop()
 
@@ -384,6 +352,11 @@ async def main():
   # We will now start the API server directly.
   # await node.start(wait_for_peers=args.wait_for_peers)
 
+  if args.roxonn_wallet_address:
+      api.roxonn_wallet_address = args.roxonn_wallet_address
+      api.node_host = args.node_host
+      api.node_port = args.node_port
+
   if args.command == "run" or args.run_model:
     model_name = args.model_name or args.run_model
     if not model_name:
@@ -408,8 +381,6 @@ async def main():
   else:
     # If we are running as a Roxonn node, we start the API server and wait.
     # The --node-port argument will be used by the API server.
-    if args.roxonn_wallet_address:
-        asyncio.create_task(send_heartbeat(args.node_id, args.roxonn_wallet_address, args.node_host, args.node_port))
     asyncio.create_task(api.run(node, port=args.node_port))
     await asyncio.Event().wait()
 
