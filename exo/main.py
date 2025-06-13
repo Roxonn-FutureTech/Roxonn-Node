@@ -366,6 +366,8 @@ async def main():
       else:
           print(f"Error: Could not build shard for default model {args.default_model}")
 
+  asyncio.create_task(node.periodic_topology_collection(2.0))
+
   if args.command == "run" or args.run_model:
     model_name = args.model_name or args.run_model
     if not model_name:
