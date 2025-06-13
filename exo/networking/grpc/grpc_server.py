@@ -45,10 +45,12 @@ class GRPCServer(node_service_pb2_grpc.NodeServiceServicer):
       ],
     )
     node_service_pb2_grpc.add_NodeServiceServicer_to_server(self, self.server)
-    listen_addr = f"{self.host}:{self.port}"
+    # Always bind to 0.0.0.0 to listen on all available interfaces.
+    # The advertised host will be the public IP, but the bind address must be local.
+    listen_addr = f'0.0.0.0:{self.port}'
     self.server.add_insecure_port(listen_addr)
+    if DEBUG >= 1: print(f"Starting gRPC server on {listen_addr}, advertising {self.host}:{self.port}")
     await self.server.start()
-    if DEBUG >= 1: print(f"Server started, listening on {listen_addr}")
 
   async def stop(self) -> None:
     if self.server:
