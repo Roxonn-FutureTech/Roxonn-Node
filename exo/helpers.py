@@ -43,36 +43,16 @@ def get_system_info():
   return "Non-Mac, non-Linux system"
 
 
-def find_available_port(host: str = "", min_port: int = 49152, max_port: int = 65535) -> int:
-  used_ports_file = os.path.join(tempfile.gettempdir(), "exo_used_ports")
-
-  def read_used_ports():
-    if os.path.exists(used_ports_file):
-      with open(used_ports_file, "r") as f:
-        return [int(line.strip()) for line in f if line.strip().isdigit()]
-    return []
-
-  def write_used_port(port, used_ports):
-    with open(used_ports_file, "w") as f:
-      print(used_ports[-19:])
-      for p in used_ports[-19:] + [port]:
-        f.write(f"{p}\n")
-
-  used_ports = read_used_ports()
-  available_ports = set(range(min_port, max_port + 1)) - set(used_ports)
-
-  while available_ports:
-    port = random.choice(list(available_ports))
-    if DEBUG >= 2: print(f"Trying to find available port {port=}")
-    try:
-      with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-        s.bind((host, port))
-      write_used_port(port, used_ports)
-      return port
-    except socket.error:
-      available_ports.remove(port)
-
-  raise RuntimeError("No available ports in the specified range")
+def find_available_port(host: str = "", min_port: int = 49152, max_port: int = 65535, max_retries: int = 100) -> int:
+    for _ in range(max_retries):
+        port = random.randint(min_port, max_port)
+        try:
+            with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+                s.bind((host, port))
+                return port
+        except socket.error:
+            continue
+    raise RuntimeError(f"Could not find an available port after {max_retries} retries.")
 
 
 def print_exo():

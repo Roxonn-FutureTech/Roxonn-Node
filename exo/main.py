@@ -109,8 +109,11 @@ inference_engine = get_inference_engine(inference_engine_name, shard_downloader)
 print(f"Using inference engine: {inference_engine.__class__.__name__} with shard downloader: {shard_downloader.__class__.__name__}")
 
 if args.node_port is None:
+  print("No node port specified, finding an available port...")
   args.node_port = find_available_port(args.node_host)
   if DEBUG >= 1: print(f"Using available port: {args.node_port}")
+else:
+  print(f"Using specified node port: {args.node_port}")
 
 args.node_id = args.node_id or get_or_create_node_id()
 chatgpt_api_endpoints = [f"http://{ip}:{args.chatgpt_api_port}/v1/chat/completions" for ip, _ in get_all_ip_addresses_and_interfaces()]
