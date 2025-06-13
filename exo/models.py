@@ -232,8 +232,16 @@ pretty_name = {
   "deepseek-r1-distill-qwen-32b-6bit": "DeepSeek R1 Distill Qwen 32B (6-bit)",
 }
 
-def get_repo(model_id: str, inference_engine_classname: str) -> Optional[str]:
-  return model_cards.get(model_id, {}).get("repo", {}).get(inference_engine_classname, None)
+def get_repo(model_id: str, inference_engine_name: str) -> Optional[str]:
+  repo = model_cards.get(model_id, {}).get("repo", {})
+  if inference_engine_name in repo:
+    return repo[inference_engine_name]
+  # Fallback for short names
+  if inference_engine_name == "tinygrad":
+    return repo.get("TinygradDynamicShardInferenceEngine")
+  if inference_engine_name == "mlx":
+    return repo.get("MLXDynamicShardInferenceEngine")
+  return None
 
 def get_pretty_name(model_id: str) -> Optional[str]:
   return pretty_name.get(model_id, None)
