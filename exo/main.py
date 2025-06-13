@@ -19,7 +19,7 @@ from exo.networking.udp.udp_discovery import UDPDiscovery
 from exo.networking.tailscale.tailscale_discovery import TailscaleDiscovery
 from exo.networking.grpc.grpc_peer_handle import GRPCPeerHandle
 from exo.topology.ring_memory_weighted_partitioning_strategy import RingMemoryWeightedPartitioningStrategy
-from exo.api import ChatGPTAPI
+import exo.api as api
 from exo.download.shard_download import ShardDownloader, NoopShardDownloader
 from exo.download.download_progress import RepoProgressEvent
 from exo.download.new_shard_download import new_shard_downloader, has_exo_home_read_access, has_exo_home_write_access, ensure_exo_home, seed_models
@@ -172,14 +172,7 @@ node = Node(
 # The FastAPI server in api.py will handle all incoming requests.
 # server = GRPCServer(node, args.node_host, args.node_port)
 # node.server = server
-api = ChatGPTAPI(
-  node,
-  node.inference_engine.__class__.__name__,
-  response_timeout=args.chatgpt_api_response_timeout,
-  on_chat_completion_request=lambda req_id, __, prompt: topology_viz.update_prompt(req_id, prompt) if topology_viz else None,
-  default_model=args.default_model,
-  system_prompt=args.system_prompt
-)
+api.node = node
 buffered_token_output = {}
 def update_topology_viz(req_id, tokens, __):
   if not topology_viz: return
