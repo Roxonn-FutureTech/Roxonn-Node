@@ -357,6 +357,14 @@ async def main():
       api.roxonn_wallet_address = args.roxonn_wallet_address
       api.node_host = args.node_host
       api.node_port = args.node_port
+  
+  if args.default_model:
+      print(f"Pre-loading default model: {args.default_model}")
+      shard = build_base_shard(args.default_model, inference_engine_name)
+      if shard:
+          asyncio.create_task(inference_engine.ensure_shard(shard))
+      else:
+          print(f"Error: Could not build shard for default model {args.default_model}")
 
   if args.command == "run" or args.run_model:
     model_name = args.model_name or args.run_model
