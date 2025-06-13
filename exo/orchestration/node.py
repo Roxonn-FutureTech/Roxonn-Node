@@ -57,6 +57,7 @@ class Node:
 
   async def start(self, wait_for_peers: int = 0) -> None:
     self.device_capabilities = await device_capabilities()
+    self.topology.update_node(self.id, self.device_capabilities)
     await self.server.start()
     await self.discovery.start()
     await self.update_peers(wait_for_peers)
