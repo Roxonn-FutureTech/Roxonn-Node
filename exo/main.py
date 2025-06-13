@@ -349,9 +349,9 @@ async def main():
     for s in [signal.SIGINT, signal.SIGTERM]:
       loop.add_signal_handler(s, handle_exit)
 
-  # The node.start() method was tied to the gRPC server.
-  # We will now start the API server directly.
-  # await node.start(wait_for_peers=args.wait_for_peers)
+  # Start the node (initialises discovery, topology collection, etc.). The gRPC server
+  # argument is optional, so this will not attempt to start it when `node.server is None`.
+  await node.start(wait_for_peers=args.wait_for_peers)
 
   if args.roxonn_wallet_address:
       api.roxonn_wallet_address = args.roxonn_wallet_address
@@ -365,8 +365,6 @@ async def main():
           asyncio.create_task(inference_engine.ensure_shard(shard))
       else:
           print(f"Error: Could not build shard for default model {args.default_model}")
-
-  asyncio.create_task(node.periodic_topology_collection(2.0))
 
   if args.command == "run" or args.run_model:
     model_name = args.model_name or args.run_model

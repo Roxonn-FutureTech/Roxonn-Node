@@ -58,7 +58,8 @@ class Node:
   async def start(self, wait_for_peers: int = 0) -> None:
     self.device_capabilities = await device_capabilities()
     self.topology.update_node(self.id, self.device_capabilities)
-    await self.server.start()
+    if self.server is not None:
+      await self.server.start()
     await self.discovery.start()
     await self.update_peers(wait_for_peers)
     await self.collect_topology(set())
@@ -67,7 +68,8 @@ class Node:
 
   async def stop(self) -> None:
     await self.discovery.stop()
-    await self.server.stop()
+    if self.server is not None:
+      await self.server.stop()
 
   def on_node_status(self, request_id, opaque_status):
     try:
