@@ -4,6 +4,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from typing import Optional
 import asyncio
 import uuid
+import uvicorn
 
 app = FastAPI()
 
@@ -51,7 +52,6 @@ async def execute_task(request: Request):
         return {"status": "error", "message": str(e)}
 
 async def run(host="0.0.0.0", port=52415):
-    import uvicorn
     config = uvicorn.Config(app, host=host, port=port, log_level="info")
     server = uvicorn.Server(config)
     await server.serve()
