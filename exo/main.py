@@ -384,9 +384,6 @@ async def main():
   # We will now start the API server directly.
   # await node.start(wait_for_peers=args.wait_for_peers)
 
-  if args.roxonn_wallet_address:
-      asyncio.create_task(send_heartbeat(args.node_id, args.roxonn_wallet_address, args.node_host, args.node_port))
-
   if args.command == "run" or args.run_model:
     model_name = args.model_name or args.run_model
     if not model_name:
@@ -411,6 +408,8 @@ async def main():
   else:
     # If we are running as a Roxonn node, we start the API server and wait.
     # The --node-port argument will be used by the API server.
+    if args.roxonn_wallet_address:
+        asyncio.create_task(send_heartbeat(args.node_id, args.roxonn_wallet_address, args.node_host, args.node_port))
     asyncio.create_task(api.run(node, port=args.node_port))
     await asyncio.Event().wait()
 
