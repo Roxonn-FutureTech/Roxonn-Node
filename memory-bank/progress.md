@@ -7,6 +7,7 @@
 - **Model Support**: A range of popular models are supported, including LLaMA, Mistral, and Deepseek.
 - **API**: A ChatGPT-compatible API is available for developers.
 - **Web UI**: A basic web UI is available for interacting with the system.
+- **Roxonn Integration**: Node can broadcast its Roxonn wallet address for Proof of Compute.
 
 ## What's Left to Build
 

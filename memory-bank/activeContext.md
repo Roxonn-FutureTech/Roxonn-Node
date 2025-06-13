@@ -2,7 +2,7 @@
 
 ## Current Focus
 
-The current focus is on providing a plan to run the exo project on the user's EC2 instance.
+The current focus is on integrating the "Roxonn-aware" exo node with the Roxonn platform backend, which will dispatch tasks and call the ProofOfCompute smart contract.
 
 ## Recent Changes
 

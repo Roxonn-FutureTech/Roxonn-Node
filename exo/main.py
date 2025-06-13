@@ -8,6 +8,7 @@ import os
 import time
 import traceback
 import uuid
+import requests
 import numpy as np
 from tqdm import tqdm
 from exo.train.dataset import load_dataset, iterate_batches
@@ -67,6 +68,7 @@ parser.add_argument("--batch-size", type=int, default=1, help="Minibatch size.")
 parser.add_argument("--resume-checkpoint", type=str, default=None, help="Path to a custom checkpoint to load")
 parser.add_argument("--save-checkpoint-dir", type=str, default="checkpoints", help="Path to a folder where checkpoints are stored")
 parser.add_argument("--node-id", type=str, default=None, help="Node ID")
+parser.add_argument("--roxonn-wallet-address", type=str, default=None, help="The Roxonn wallet address for receiving Proof of Compute rewards.")
 parser.add_argument("--node-host", type=str, default="0.0.0.0", help="Node host")
 parser.add_argument("--node-port", type=int, default=None, help="Node port")
 parser.add_argument("--models-seed-dir", type=str, default=None, help="Model seed directory")
@@ -134,7 +136,8 @@ if args.discovery_module == "udp":
     lambda peer_id, address, description, device_capabilities: GRPCPeerHandle(peer_id, address, description, device_capabilities),
     discovery_timeout=args.discovery_timeout,
     allowed_node_ids=allowed_node_ids,
-    allowed_interface_types=allowed_interface_types
+    allowed_interface_types=allowed_interface_types,
+    roxonn_wallet_address=args.roxonn_wallet_address
   )
 elif args.discovery_module == "tailscale":
   discovery = TailscaleDiscovery(
@@ -318,6 +321,22 @@ async def check_exo_home():
           {"❌ No write access" if not has_write else ""}
           """)
 
+async def send_heartbeat(node_id, wallet_address, host, port):
+    while True:
+        try:
+            payload = {
+                "node_id": node_id,
+                "wallet_address": wallet_address,
+                "ip_address": host,
+                "port": port
+            }
+            roxonn_url = os.environ.get("ROXONN_HEARTBEAT_URL", "https://api.roxonn.com/api/node/heartbeat")
+            requests.post(roxonn_url, json=payload)
+            if DEBUG >= 1: print(f"Sent heartbeat for node {node_id}")
+        except Exception as e:
+            if DEBUG >= 1: print(f"Failed to send heartbeat: {e}")
+        await asyncio.sleep(60)
+
 async def main():
   loop = asyncio.get_running_loop()
 
@@ -347,6 +366,9 @@ async def main():
       loop.add_signal_handler(s, handle_exit)
 
   await node.start(wait_for_peers=args.wait_for_peers)
+
+  if args.roxonn_wallet_address:
+      asyncio.create_task(send_heartbeat(args.node_id, args.roxonn_wallet_address, args.node_host, args.node_port))
 
   if args.command == "run" or args.run_model:
     model_name = args.model_name or args.run_model

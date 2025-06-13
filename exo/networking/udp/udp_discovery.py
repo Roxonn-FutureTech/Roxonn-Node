@@ -50,32 +50,34 @@ class BroadcastProtocol(asyncio.DatagramProtocol):
 
 class UDPDiscovery(Discovery):
   def __init__(
-    self,
-    node_id: str,
-    node_port: int,
-    listen_port: int,
-    broadcast_port: int,
-    create_peer_handle: Callable[[str, str, str, DeviceCapabilities], PeerHandle],
-    broadcast_interval: int = 2.5,
-    discovery_timeout: int = 30,
-    device_capabilities: DeviceCapabilities = UNKNOWN_DEVICE_CAPABILITIES,
-    allowed_node_ids: Optional[List[str]] = None,
-    allowed_interface_types: Optional[List[str]] = None,
-  ):
-    self.node_id = node_id
-    self.node_port = node_port
-    self.listen_port = listen_port
-    self.broadcast_port = broadcast_port
-    self.create_peer_handle = create_peer_handle
-    self.broadcast_interval = broadcast_interval
-    self.discovery_timeout = discovery_timeout
-    self.device_capabilities = device_capabilities
-    self.allowed_node_ids = allowed_node_ids
-    self.allowed_interface_types = allowed_interface_types
-    self.known_peers: Dict[str, Tuple[PeerHandle, float, float, int]] = {}
-    self.broadcast_task = None
-    self.listen_task = None
-    self.cleanup_task = None
+      self,
+      node_id: str,
+      node_port: int,
+      listen_port: int,
+      broadcast_port: int,
+      create_peer_handle: Callable[[str, str, str, DeviceCapabilities], PeerHandle],
+      broadcast_interval: int = 2.5,
+      discovery_timeout: int = 30,
+      device_capabilities: DeviceCapabilities = UNKNOWN_DEVICE_CAPABILITIES,
+      allowed_node_ids: Optional[List[str]] = None,
+      allowed_interface_types: Optional[List[str]] = None,
+      roxonn_wallet_address: Optional[str] = None,
+    ):
+      self.node_id = node_id
+      self.roxonn_wallet_address = roxonn_wallet_address
+      self.node_port = node_port
+      self.listen_port = listen_port
+      self.broadcast_port = broadcast_port
+      self.create_peer_handle = create_peer_handle
+      self.broadcast_interval = broadcast_interval
+      self.discovery_timeout = discovery_timeout
+      self.device_capabilities = device_capabilities
+      self.allowed_node_ids = allowed_node_ids
+      self.allowed_interface_types = allowed_interface_types
+      self.known_peers: Dict[str, Tuple[PeerHandle, float, float, int]] = {}
+      self.broadcast_task = None
+      self.listen_task = None
+      self.cleanup_task = None
 
   async def start(self):
     self.device_capabilities = await device_capabilities()
@@ -104,6 +106,7 @@ class UDPDiscovery(Discovery):
         message = json.dumps({
           "type": "discovery",
           "node_id": self.node_id,
+          "roxonn_wallet_address": self.roxonn_wallet_address,
           "grpc_port": self.node_port,
           "device_capabilities": self.device_capabilities.to_dict(),
           "priority": interface_priority,
