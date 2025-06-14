@@ -35,13 +35,17 @@ async def execute_task(request: Request):
         request_id = str(uuid.uuid4())
         
         future = asyncio.get_event_loop().create_future()
+        token_buffer = []
 
         def on_token_callback(req_id, tokens, is_finished):
-            if req_id == request_id and is_finished:
-                if tokens and tokens[-1] == tokenizer.eos_token_id:
-                    tokens = tokens[:-1]
-                response_text = tokenizer.decode(tokens)
-                future.set_result(response_text)
+            nonlocal token_buffer
+            if req_id == request_id:
+                token_buffer.extend(tokens)
+                if is_finished:
+                    if token_buffer and token_buffer[-1] == tokenizer.eos_token_id:
+                        token_buffer = token_buffer[:-1]
+                    response_text = tokenizer.decode(token_buffer)
+                    future.set_result(response_text)
 
         callback_id = f"task-response-{request_id}"
         node.on_token.register(callback_id).on_next(on_token_callback)

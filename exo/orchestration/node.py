@@ -154,7 +154,10 @@ class Node:
       self.outstanding_requests[request_id] = "waiting"
       asyncio.create_task(self.forward_tensor(shard, forward, request_id, self.get_partition_index(offset = 1), inference_state))
 
-    return  np.array(self.buffered_token_output[request_id][0]) if shard.model_id != 'stable-diffusion-2-1-base' else intermediate_result
+    return_value = np.array(self.buffered_token_output.get(request_id, ([],))[0]) if shard.model_id != 'stable-diffusion-2-1-base' else intermediate_result
+    if is_finished and shard.model_id != 'stable-diffusion-2-1-base':
+        self.buffered_token_output.pop(request_id, None)
+    return return_value
 
 
   async def process_prompt(
