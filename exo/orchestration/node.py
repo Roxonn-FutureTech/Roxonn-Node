@@ -148,8 +148,8 @@ class Node:
 
     if is_finished:
       if shard.model_id != 'stable-diffusion-2-1-base':
-        self.buffered_token_output[request_id] = (self.buffered_token_output[request_id][0], True)
-      self.outstanding_requests.pop(request_id)
+        self.buffered_token_output.pop(request_id, None)
+      self.outstanding_requests.pop(request_id, None)
     else:
       self.outstanding_requests[request_id] = "waiting"
       asyncio.create_task(self.forward_tensor(shard, forward, request_id, self.get_partition_index(offset = 1), inference_state))
