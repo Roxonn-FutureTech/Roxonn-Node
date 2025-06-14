@@ -143,8 +143,14 @@ class Node:
       intermediate_result, inference_state = self.handle_stable_diffusion(inference_state, result)
       forward = result
     if shard.is_last_layer():
-      self.trigger_on_token_callbacks(request_id, intermediate_result, is_finished)
-      asyncio.create_task(self.broadcast_result(request_id, intermediate_result, is_finished))
+      # Emit only the newly-generated token(s) instead of the **entire** growing
+      # buffer.  This prevents downstream consumers that simply
+      #   token_buffer.extend(tokens)
+      # from re-adding the same prefix on every callback.
+      emitted = intermediate_result if shard.model_id == 'stable-diffusion-2-1-base' else [token.item()]
+
+      self.trigger_on_token_callbacks(request_id, emitted, is_finished)
+      asyncio.create_task(self.broadcast_result(request_id, emitted, is_finished))
 
     if is_finished:
       if shard.model_id != 'stable-diffusion-2-1-base':
