@@ -134,7 +134,7 @@ class Node:
         is_finished = token.item() == self.inference_engine.tokenizer.eos_token_id or is_finished or len(self.buffered_token_output[request_id][0]) >= self.max_generate_tokens
         if DEBUG >= 2: print(f"[{request_id}] result size: {result.size}, is finished: {is_finished}, buffered tokens: {len(self.buffered_token_output[request_id][0])}")
         forward = token.reshape(1, -1)
-        intermediate_result = [self.buffered_token_output[request_id][0][-1]]
+        intermediate_result = self.buffered_token_output[request_id][0]
       else:
         forward = result
     else:
