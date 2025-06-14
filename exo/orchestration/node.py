@@ -260,7 +260,7 @@ class Node:
       os.makedirs("/".join(path.split("/")[:-1]), exist_ok=True)
       await self.inference_engine.save_checkpoint(shard, path)
       self.checkpoints[model][sid] = sorted(self.checkpoints[model][sid] + [iteration])
-    self.outstanding_requests.pop(f"{sid}::{iteration}")
+    self.outstanding_requests.pop(f"{sid}::{iteration}", None)
 
   async def process_example(
     self,
@@ -333,7 +333,7 @@ class Node:
           loss, backgrad = await self.forward_example(shard, step, target, length, train, request_id, self.get_partition_index(offset = 1))
           self.outstanding_requests[request_id] = "training"
           partial_loss, grad = await self.inference_engine.train(request_id, shard, example, backgrad, length, loss="back_gradient")
-        self.outstanding_requests.pop(request_id)
+        self.outstanding_requests.pop(request_id, None)
         if shard.is_first_layer():
           return loss
         else:
@@ -347,10 +347,10 @@ class Node:
           step, _ = await self.inference_engine.infer_tensor(request_id, shard, example)
           self.outstanding_requests[request_id] = "waiting"
           loss = await self.forward_example(shard, step, target, length, train, request_id, self.get_partition_index(offset = 1))
-        self.outstanding_requests.pop(request_id)
+        self.outstanding_requests.pop(request_id, None)
         return loss
     except Exception as e:
-      self.outstanding_requests.pop(request_id)
+      self.outstanding_requests.pop(request_id, None)
       print(f"Error processing example for shard {shard}: {e}")
       traceback.print_exc()
       return None
@@ -386,7 +386,7 @@ class Node:
       ret = await self.process_inference_result(shard, result, request_id, inference_state) 
       return ret
     except Exception as e:
-      self.outstanding_requests.pop(request_id)
+      self.outstanding_requests.pop(request_id, None)
       print(f"Error processing tensor for shard {shard}: {e}")
       traceback.print_exc()
   
