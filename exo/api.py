@@ -38,6 +38,8 @@ async def execute_task(request: Request):
 
         def on_token_callback(req_id, tokens, is_finished):
             if req_id == request_id and is_finished:
+                if tokens and tokens[-1] == tokenizer.eos_token_id:
+                    tokens = tokens[:-1]
                 response_text = tokenizer.decode(tokens)
                 future.set_result(response_text)
 
