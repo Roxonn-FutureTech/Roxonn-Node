@@ -89,13 +89,35 @@ async def send_heartbeat(node_id, wallet_address, host, port):
             }
             roxonn_url = os.environ.get("ROXONN_HEARTBEAT_URL", "https://api.roxonn.com/api/node/heartbeat")
             requests.post(roxonn_url, json=payload)
-            if "DEBUG" in os.environ and os.environ["DEBUG"] >= 1: print(f"Sent heartbeat for node {node_id}")
+            try:
+                dbg = int(os.environ.get("DEBUG", "0"))
+            except ValueError:
+                dbg = 0
+            if dbg >= 1:
+                print(f"Sent heartbeat for node {node_id}")
         except Exception as e:
-            if "DEBUG" in os.environ and os.environ["DEBUG"] >= 1: print(f"Failed to send heartbeat: {e}")
+            try:
+                dbg = int(os.environ.get("DEBUG", "0"))
+            except ValueError:
+                dbg = 0
+            if dbg >= 1:
+                print(f"Failed to send heartbeat: {e}")
         await asyncio.sleep(60)
 
 @app.on_event("startup")
 async def startup_event():
+    global roxonn_wallet_address, node_host, node_port
+    # TEMP DEBUG: show the initial values
+    print(f"startup_event: wallet={roxonn_wallet_address}, host={node_host}, port={node_port}")
+    # Fallback to environment variables if values were not set in this module instance.
+    if roxonn_wallet_address is None:
+        roxonn_wallet_address = os.environ.get("ROXONN_WALLET_ADDRESS")
+    if node_host is None:
+        node_host = os.environ.get("NODE_HOST")
+    if node_port is None:
+        port_env = os.environ.get("NODE_PORT")
+        node_port = int(port_env) if port_env is not None else None
+    print(f"startup_event (after env fallback): wallet={roxonn_wallet_address}, host={node_host}, port={node_port}")
     if roxonn_wallet_address:
         asyncio.create_task(send_heartbeat(node.id, roxonn_wallet_address, node_host, node_port))
 

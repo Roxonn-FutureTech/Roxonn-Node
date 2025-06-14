@@ -354,9 +354,15 @@ async def main():
   await node.start(wait_for_peers=args.wait_for_peers)
 
   if args.roxonn_wallet_address:
+      print(f"[DEBUG main] setting api globals wallet={args.roxonn_wallet_address} host={args.node_host} port={args.node_port}")
       api.roxonn_wallet_address = args.roxonn_wallet_address
       api.node_host = args.node_host
       api.node_port = args.node_port
+      # Also export via environment so a separately-imported exo.api (e.g. by the
+      # installed console-script entrypoint) can pick them up.
+      os.environ["ROXONN_WALLET_ADDRESS"] = args.roxonn_wallet_address
+      os.environ["NODE_HOST"] = str(args.node_host)
+      os.environ["NODE_PORT"] = str(args.node_port)
   
   if args.default_model:
       print(f"Pre-loading default model: {args.default_model}")
