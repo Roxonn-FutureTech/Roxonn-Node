@@ -26,7 +26,7 @@ exo: Run your own AI cluster at home with everyday devices. Maintained by [exo l
 
 > **Note:** This is the official **Roxonn** fork of the excellent [exo-explore/exo](https://github.com/exo-explore/exo) project, originally created by [exo labs](https://x.com/exolabs).
 
-The purpose of this fork is to integrate `exo` into the **[Roxonn Platform](https://app.roxonn.com)**, creating a decentralized "Proof of Compute" network. This allows anyone, from individual hobbyists to large-scale operators, to contribute their spare compute resources to the network and earn `ROXN` token rewards for running AI tasks.
+The purpose of this fork is to integrate `exo` into the **[Roxonn Platform](https://app.roxonn.com)**, creating a decentralized "Proof of Compute" network. This allows anyone, from individual hobbyists to large-scale operators, to contribute their spare compute resources to the network and earn `ROXN` token rewards for running AI tasks. You can view the on-chain activity for this network on the XDC block explorer here: **[Proof of Compute Contract on XDC Scan](https://xdcscan.io/address/0xF00c002fd00F8760fcb67e4717Ff4685e2D631DD)**.
 
 ### How to Participate and Earn Rewards
 
