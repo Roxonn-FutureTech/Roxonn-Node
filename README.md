@@ -10,7 +10,7 @@ exo: Run your own AI cluster at home with everyday devices. Maintained by [exo l
 
 <h3>
 
-[Discord](https://discord.gg/EUnjGpsmWw) | [Telegram](https://t.me/+Kh-KqHTzFYg3MGNk) | [X](https://x.com/exolabs)
+[Discord](https://discord.gg/tJYJ2SdF) | [Telegram](https://x.com/RoxonnEcosystem) | [X](https://x.com/RoxonnEcosystem)
 
 </h3>
 
@@ -22,20 +22,39 @@ exo: Run your own AI cluster at home with everyday devices. Maintained by [exo l
 
 </div>
 
+## The Roxonn Fork: Decentralized AI with Proof of Compute
+
+> **Note:** This is the official **Roxonn** fork of the excellent [exo-explore/exo](https://github.com/exo-explore/exo) project, originally created by [exo labs](https://x.com/exolabs).
+
+The purpose of this fork is to integrate `exo` into the **[Roxonn Platform](https://app.roxonn.com)**, creating a decentralized "Proof of Compute" network. This allows anyone, from individual hobbyists to large-scale operators, to contribute their spare compute resources to the network and earn `ROXN` token rewards for running AI tasks.
+
+### How to Participate and Earn Rewards
+
+1.  **Get a Wallet:** You'll need an XDC wallet address from the [Roxonn Platform](https://app.roxonn.com).
+2.  **Run the Node:** Start the `exo` node with your wallet address. This registers you on the network.
+    ```sh
+    exo --roxonn-wallet-address <YOUR_XDC_WALLET_ADDRESS>  --node-host <IP_ADDRESS> --node-port <52415> --default-model <llama-3.2-1b>
+    ```
+3.  **Contribute & Earn:** Once your node is running, it's available to receive AI inference tasks from the network. Every completed task is recorded on-chain as a "compute unit." These compute units will be the basis for earning `ROXN` token rewards as the network develops.
+
+### Contribute to the Project and Earn Bounties
+
+We also welcome contributions to the `exo` codebase itself. Bounties for accepted pull requests are managed on the **[Roxonn Platform](https://app.roxonn.com)**.
+
 ---
 
 Unify your existing devices into one powerful GPU: iPhone, iPad, Android, Mac, NVIDIA, Raspberry Pi, pretty much any device!
 
 <div align="center">
-  <h2>Update: exo is hiring. See <a href="https://exolabs.net">here</a> for more details.</h2>
-  <h2>Interested in running exo in your business? <a href="mailto:hello@exolabs.net">Contact us</a> to discuss.</h2>
+  <h2>Update: Roxonn is hiring. See <a href="https://roxonn.zohorecruit.in/jobs/Careers">here</a> for more details.</h2>
+  <h2>Interested in running Roxonn Node in your business? <a href="mailto:connect@roxonn.com">Contact us</a> to discuss.</h2>
 </div>
 
 ## Get Involved
 
-exo is **experimental** software. Expect bugs early on. Create issues so they can be fixed. The [exo labs](https://x.com/exolabs) team will strive to resolve issues quickly.
+Roxonn Node is **experimental** software. Expect bugs early on. Create issues so they can be fixed. The [Roxonn Ecosystem](https://x.com/RoxonnEcosystem) team will strive to resolve issues quickly.
 
-We also welcome contributions from the community. We have a list of bounties in [this sheet](https://docs.google.com/spreadsheets/d/1cTCpTIp48UnnIvHeLEUNg1iMy_Q6lRybgECSFCoVJpE/edit?usp=sharing).
+We also welcome contributions from the community. We have a list of bounties in [our platform](https://app.roxonn.com/repos/Roxonn-FutureTech/Roxonn-Node).
 
 ## Features
 
@@ -63,6 +82,8 @@ Exo supports different [partitioning strategies](exo/topology/partitioning_strat
 
 !["A screenshot of exo running 5 nodes](docs/exo-screenshot.jpg)
 
+<a href="https://www.youtube.com/watch?v=rWsA1TZdXSw" target="_blank"><img src="https://img.youtube.com/vi/rWsA1TZdXSw/0.jpg" alt="Watch the video" width="480" height="360" border="10" /></a>
+
 ## Installation
 
 The current recommended way to install exo is from source.
@@ -87,7 +108,7 @@ The current recommended way to install exo is from source.
 
 
 ```sh
-git clone https://github.com/exo-explore/exo.git
+git clone https://github.com/Roxonn-FutureTech/Roxonn-Node
 cd exo
 pip install -e .
 # alternatively, with venv
